@@ -1,4 +1,4 @@
-data "aws_ami" "ubutu" {
+data "aws_ami" "ubuntu" {
     most_recent = true
 
     filter {
@@ -13,7 +13,10 @@ resource "aws_instance" "docker_ec2" {
     instance_type = var.instance_type
 
     vpc_security_group_ids = [aws_security_group.sg.id]
-
+    
+    depends_on = [
+      aws_security_group.sg
+    ]
      user_data = <<-EOF
               #!/bin/bash
               sudo apt-get update
@@ -30,7 +33,7 @@ resource "aws_instance" "docker_ec2" {
 resource "aws_security_group" "sg" {
     name = "docker-sg"
     description = "Allow HTTP 5000"
-    
+
     ingress {
     from_port   = 5000
     to_port     = 5000
